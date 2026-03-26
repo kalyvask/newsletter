@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/newsletter.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/newsletter?type=daily",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}
