@@ -74,7 +74,7 @@ class handler(BaseHTTPRequestHandler):
             init_database, seed_sources, insert_article,
             update_source_last_checked, get_source_by_type,
         )
-        from src.scrapers import HackerNewsScraper
+        from src.scrapers.hackernews import HackerNewsScraper
         from src.processors import RelevanceScorer
 
         init_database()
@@ -84,7 +84,9 @@ class handler(BaseHTTPRequestHandler):
         scraped = 0
 
         try:
-            scraper = HackerNewsScraper()
+            # Limit to 15 stories, skip comments to fit within Vercel timeout
+            scraper = HackerNewsScraper(items_to_fetch=15)
+            scraper._get_top_comments = lambda story, max_comments=5: []  # skip comments
             items = scraper.run()
             db_sources = get_source_by_type("hackernews")
             source_id_map = {s["name"]: s["id"] for s in db_sources}

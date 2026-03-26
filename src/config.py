@@ -47,8 +47,8 @@ CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-20250514")
 
 # Scraping settings
 DEFAULT_SCRAPE_INTERVAL_HOURS = 6
-REQUEST_TIMEOUT = 30
-REQUEST_DELAY = 1.0  # Seconds between requests to same domain
+REQUEST_TIMEOUT = 10 if VERCEL else 30
+REQUEST_DELAY = 0.1 if VERCEL else 1.0  # Faster on Vercel, polite locally
 
 # Relevance threshold
 RELEVANCE_THRESHOLD = 0.6
