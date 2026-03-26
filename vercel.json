@@ -6,6 +6,12 @@
       "use": "@vercel/python"
     }
   ],
+  "routes": [
+    {
+      "src": "/api/newsletter(.*)",
+      "dest": "/api/newsletter.py"
+    }
+  ],
   "crons": [
     {
       "path": "/api/newsletter?type=daily",
