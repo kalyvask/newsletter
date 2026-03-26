@@ -142,10 +142,14 @@ class handler(BaseHTTPRequestHandler):
             }).encode())
 
         except Exception as e:
+            import traceback
             self.send_response(500)
             self.send_header("Content-Type", "application/json")
             self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self.wfile.write(json.dumps({
+                "error": str(e),
+                "traceback": traceback.format_exc(),
+            }).encode())
 
     def do_POST(self):
         """Also accept POST for manual triggers."""
