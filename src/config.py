@@ -7,11 +7,18 @@ from dotenv import load_dotenv
 # Load environment variables (override=True ensures .env takes precedence)
 load_dotenv(override=True)
 
-# Base paths
+# Base paths — use /tmp on Vercel (read-only filesystem)
+VERCEL = os.getenv("VERCEL", "")
 BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
-OUTPUT_DIR = BASE_DIR / "output"
-REPORTS_DIR = OUTPUT_DIR / "reports"
+
+if VERCEL:
+    DATA_DIR = Path("/tmp/data")
+    OUTPUT_DIR = Path("/tmp/output")
+    REPORTS_DIR = OUTPUT_DIR / "reports"
+else:
+    DATA_DIR = BASE_DIR / "data"
+    OUTPUT_DIR = BASE_DIR / "output"
+    REPORTS_DIR = OUTPUT_DIR / "reports"
 
 # Ensure directories exist
 DATA_DIR.mkdir(exist_ok=True)
