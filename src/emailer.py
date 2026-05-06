@@ -1,6 +1,7 @@
 """Email newsletter module for AI Deployment Research Monitor."""
 
 import logging
+import os
 import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
@@ -18,6 +19,11 @@ from .config import (
     REPORT_EMAIL_TO,
     REPORT_EMAIL_FROM,
 )
+
+# Branding (configurable via env so forks don't have to edit code)
+NEWSLETTER_TITLE = os.getenv("NEWSLETTER_TITLE", "AI Deployment Intelligence")
+NEWSLETTER_FOOTER_LABEL = os.getenv("NEWSLETTER_FOOTER_LABEL", "AI Deployment Monitor")
+NEWSLETTER_FOOTER_LINK = os.getenv("NEWSLETTER_FOOTER_LINK", "#")
 
 logger = logging.getLogger(__name__)
 
@@ -159,15 +165,15 @@ EMAIL_TEMPLATE = """\
 <body>
 <div class="wrapper">
   <div class="header">
-    <h1>AI Deployment Intelligence</h1>
+    <h1>{title}</h1>
     <p class="subtitle">{subtitle}</p>
   </div>
   <div class="content">
     {body}
   </div>
   <div class="footer">
-    <p>You're receiving this because you subscribed to AI Deployment Monitor newsletters.</p>
-    <p>Powered by <a href="https://github.com/kalyvask/newsletter">AI Deployment Monitor</a></p>
+    <p>You're receiving this because you subscribed to this newsletter.</p>
+    <p>Powered by <a href="{footer_link}">{footer_label}</a></p>
   </div>
 </div>
 </body>
@@ -201,14 +207,17 @@ def build_newsletter_email(
     today = datetime.utcnow().strftime("%B %d, %Y")
     type_label = report_type.replace("_", " ").title()
 
-    subject = f"AI Deployment Intelligence — {type_label} | {today}"
+    subject = f"{NEWSLETTER_TITLE} — {type_label} | {today}"
     subtitle = f"{type_label} Briefing — {today}"
 
     html_body = markdown_to_html(report_content)
     html = EMAIL_TEMPLATE.format(
         subject=subject,
+        title=NEWSLETTER_TITLE,
         subtitle=subtitle,
         body=html_body,
+        footer_label=NEWSLETTER_FOOTER_LABEL,
+        footer_link=NEWSLETTER_FOOTER_LINK,
     )
 
     return subject, report_content, html

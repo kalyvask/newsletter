@@ -84,6 +84,59 @@ python main.py analyze
 python main.py report --type weekly
 ```
 
+## Configure for Your Own Newsletter
+
+The repo ships with infrastructure (scrapers, Claude prompts, the queue-for-review
+flow) but no opinion. Your reading list, your writing voice, and your recipient list
+all live in **gitignored local files** so you can fork without leaking taste.
+
+### 1. Your reading list and keywords
+
+```bash
+cp reading-list.example.json reading-list.json
+```
+
+Edit `reading-list.json` — `primary_keywords`, `secondary_keywords`, `target_companies`,
+`reddit_subreddits`, `rss_feeds`, `industry_verticals`, `trend_categories`, and
+`exclusion_keywords` are all yours to shape. The example file shows the schema with
+a small generic starter list. `reading-list.json` is gitignored.
+
+### 2. Your voice and audience
+
+```bash
+cp voice.example.md voice.md
+```
+
+Edit `voice.md` to describe **who the briefing is for** and **how it should sound**
+(audience, tone, themes to emphasize, things to skip). It gets injected into the
+system prompts used to draft each section. `voice.md` is gitignored.
+
+### 3. Your env vars
+
+```bash
+cp .env.example .env
+```
+
+In `.env`, set:
+
+- `ANTHROPIC_API_KEY` — required, for the Claude calls.
+- `REPORT_EMAIL_TO`, `REPORT_EMAIL_FROM`, `SMTP_*` — recipient and SMTP for
+  newsletter delivery.
+- `NEWSLETTER_TITLE`, `NEWSLETTER_FOOTER_LABEL`, `NEWSLETTER_FOOTER_LINK` —
+  optional branding for the email header and footer.
+- `READING_LIST_PATH`, `VOICE_PROMPT_PATH` — optional, only if you keep these
+  files outside the repo root.
+
+### 4. Confirm your personal content stays local
+
+```bash
+git status
+```
+
+You should see `reading-list.json`, `voice.md`, `.env`, `data/`, `output/`, and
+`drafts/` listed as ignored, never staged. The `*.example.*` files are the only
+versions tracked in git.
+
 ## Web UI Features
 
 ### Dashboard

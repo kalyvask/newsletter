@@ -1,0 +1,86 @@
+{
+  "_comment": "Copy this file to `reading-list.json` and customize. Your `reading-list.json` is gitignored so your personal sources, keywords, and taste stay local. The shape below shows the full schema; trim or extend any list as you like.",
+
+  "primary_keywords": [
+    "ai deployment",
+    "ai agents",
+    "rag",
+    "fine-tuning",
+    "llmops",
+    "ai safety"
+  ],
+
+  "secondary_keywords": [
+    "mlops",
+    "vector database",
+    "open source llm",
+    "rlhf"
+  ],
+
+  "exclusion_keywords": [
+    "crypto",
+    "blockchain",
+    "nft",
+    "meme coin",
+    "trading bot"
+  ],
+
+  "target_companies": [
+    "openai",
+    "anthropic",
+    "google deepmind",
+    "mistral",
+    "databricks",
+    "hugging face",
+    "langchain"
+  ],
+
+  "opportunity_keywords": [
+    "raised $",
+    "series a",
+    "series b",
+    "general availability",
+    "production deployment",
+    "case study",
+    "rolled out to"
+  ],
+
+  "industry_verticals": {
+    "Financial Services": ["fintech", "banking", "insurance", "trading", "payments", "finance"],
+    "Healthcare": ["healthcare", "medical", "pharma", "biotech", "clinical"],
+    "Legal": ["legal", "law firm", "contract", "compliance", "litigation"],
+    "Technology & SaaS": ["saas", "software", "platform", "developer tools", "devtools"]
+  },
+
+  "reddit_subreddits": [
+    "MachineLearning",
+    "LocalLLaMA",
+    "LangChain",
+    "ClaudeAI",
+    "OpenAI",
+    "ProductManagement"
+  ],
+
+  "rss_feeds": {
+    "techcrunch_ai": "https://techcrunch.com/category/artificial-intelligence/feed/",
+    "venturebeat_ai": "https://venturebeat.com/category/ai/feed/",
+    "huggingface_blog": "https://huggingface.co/blog/feed.xml",
+    "arxiv_cs_ai": "https://rss.arxiv.org/rss/cs.AI"
+  },
+
+  "trend_categories": {
+    "AI Agents & Autonomy": [
+      "ai agents", "agentic ai", "autonomous agents", "multi-agent",
+      "agent framework", "computer use"
+    ],
+    "LLM Infrastructure": [
+      "inference", "model serving", "llmops", "gpu", "scaling"
+    ],
+    "RAG & Knowledge": [
+      "rag", "retrieval", "vector database", "embeddings"
+    ],
+    "Open Source AI": [
+      "llama", "mistral", "open source", "open weights"
+    ]
+  }
+}

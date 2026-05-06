@@ -4,6 +4,12 @@ venv/
 .venv/
 env/
 
+# Personal newsletter content (keep local, not in repo)
+reading-list.json
+voice.md
+drafts/
+outputs/
+
 # Python
 __pycache__/
 *.py[cod]

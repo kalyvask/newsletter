@@ -13,7 +13,7 @@ try:
 except ImportError:
     ANTHROPIC_AVAILABLE = False
 
-from ..config import REPORTS_DIR, TARGET_COMPANIES, ANTHROPIC_API_KEY, CLAUDE_MODEL, TREND_CATEGORIES
+from ..config import REPORTS_DIR, TARGET_COMPANIES, ANTHROPIC_API_KEY, CLAUDE_MODEL, TREND_CATEGORIES, VOICE_PROMPT
 from ..database import (
     get_articles_for_report,
     get_recent_insights,
@@ -198,9 +198,10 @@ class ReportGenerator:
             article_blocks.append(block)
 
         system = """You are a senior AI industry strategist writing deep-dive analyses for a research
-briefing. Your audience is a GSB student studying AI deployment patterns to identify future business
-opportunities. Write with the analytical depth of a McKinsey partner but the clarity of a great
+briefing. Write with the analytical depth of a top strategy consultant but the clarity of a great
 business journalist. Every analysis should answer: "So what? What should I do with this information?" """
+        if VOICE_PROMPT:
+            system += f"\n\n--- VOICE & AUDIENCE NOTES ---\n{VOICE_PROMPT}"
 
         prompt = f"""Analyze these top articles and write a DEEP DIVE section for an executive briefing.
 
@@ -355,9 +356,10 @@ Be bold, specific, and actionable throughout."""
 
         system = """You are a senior AI strategist writing the opening executive summary for a weekly
 intelligence briefing. This summary is the MOST READ section — it must be dense with insight,
-zero fluff. Your reader is a Stanford GSB student studying AI deployment strategies who will use
-this to make career and investment decisions. Write with the precision of a Bloomberg analyst
-and the strategic depth of a Sequoia partner."""
+zero fluff. Write with the precision of a top financial analyst and the strategic depth of a
+top-tier VC partner."""
+        if VOICE_PROMPT:
+            system += f"\n\n--- VOICE & AUDIENCE NOTES ---\n{VOICE_PROMPT}"
 
         prompt = f"""Write the Executive Summary section (400-500 words) for this week's AI Deployment
 Intelligence Briefing.

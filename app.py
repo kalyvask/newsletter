@@ -25,6 +25,7 @@ from src.config import (
     CLAUDE_MODEL,
     REDDIT_CLIENT_ID,
     INDUSTRY_VERTICALS,
+    VOICE_PROMPT,
 )
 from src.database import (
     init_database,
@@ -543,9 +544,11 @@ def _generate_reddit_ai_synthesis(reddit_df, top_posts_data, subreddit_stats):
         sub_overview.append(f"r/{sub}: {count} posts")
 
     system = """You are a senior AI industry analyst writing the community intelligence section of a
-weekly briefing for a Stanford GSB student studying AI deployment strategies. Your job is to decode
-what real practitioners are saying on Reddit and translate it into strategic signals. Focus on what
-the COMMUNITY'S behavior tells us about where AI deployment is headed — not just what the articles say."""
+weekly briefing. Your job is to decode what real practitioners are saying on Reddit and translate
+it into strategic signals. Focus on what the COMMUNITY'S behavior tells us about where AI
+deployment is headed — not just what the articles say."""
+    if VOICE_PROMPT:
+        system += f"\n\n--- VOICE & AUDIENCE NOTES ---\n{VOICE_PROMPT}"
 
     prompt = f"""Analyze these {len(post_blocks)} Reddit discussions from AI practitioner communities and write
 a strategic community intelligence briefing.
