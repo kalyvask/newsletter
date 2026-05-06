@@ -2,6 +2,106 @@
 
 A Python-based research monitoring tool that automatically scans multiple sources (news sites, Reddit, Hacker News, blogs, RSS feeds) for content relevant to AI deployment strategies, implementation models, and the latest AI trends.
 
+## Personalize this for your own use
+
+If you forked or cloned this repo, **do these six steps before running anything**.
+Every personal file (your reading list, your voice, your secrets, your launcher
+script, your local DB, your generated drafts) is gitignored — only the
+`*.example.*` templates are tracked. Nothing personal will ever be committed if
+you follow the steps below.
+
+### 1. Create your `.env` from the template
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and fill in, at minimum:
+
+- `ANTHROPIC_API_KEY` — required, get one at [console.anthropic.com](https://console.anthropic.com).
+- `REPORT_EMAIL_TO` — the inbox that should receive the newsletter.
+- `REPORT_EMAIL_FROM` — the From: address shown to the recipient.
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` — your outbound mail
+  server. For Gmail, generate an App Password at
+  [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+  and use that as `SMTP_PASSWORD`.
+
+Optional but recommended: `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`,
+`REDDIT_USER_AGENT` if you want Reddit scraping (sign up at
+[reddit.com/prefs/apps](https://www.reddit.com/prefs/apps)).
+
+### 2. Create your `reading-list.json` from the template
+
+```bash
+cp reading-list.example.json reading-list.json
+```
+
+Open `reading-list.json` and replace the starter values with **your own**:
+
+- `primary_keywords` and `secondary_keywords` — what topics matter to you.
+- `exclusion_keywords` — what to filter out.
+- `target_companies` — companies you want every mention of.
+- `reddit_subreddits` — which subs to scan.
+- `rss_feeds` — your own news/blog/research feeds (key → URL).
+- `industry_verticals` and `trend_categories` — your taxonomy for grouping
+  coverage.
+- `opportunity_keywords` — phrases that flag funding/launch/case-study signal.
+
+### 3. Create your `voice.md` from the template
+
+```bash
+cp voice.example.md voice.md
+```
+
+Open `voice.md` and write 3–8 lines describing **who the briefing is for** and
+**how it should sound** (audience, tone, themes to emphasize, things to skip).
+This text is injected into the system prompts that draft every section. Leave
+the file blank if you want a generic neutral tone — the pipeline runs either
+way.
+
+### 4. Set the optional branding env vars in `.env`
+
+In the same `.env` you created in step 1, set the email branding:
+
+- `NEWSLETTER_TITLE` — the subject-line prefix and email header (e.g.
+  `"Friday AI Briefing"`). Defaults to `AI Deployment Intelligence`.
+- `NEWSLETTER_FOOTER_LABEL` — the link text in the footer (e.g. `"My
+  Newsletter"`).
+- `NEWSLETTER_FOOTER_LINK` — the URL that label points to (e.g. your archive
+  page or a Substack).
+
+### 5. Create your local launcher (optional, Windows convenience)
+
+```bash
+cp run_newsletter.bat.example run_newsletter.bat
+```
+
+Open `run_newsletter.bat` and edit the project path inside it to match where
+you cloned the repo. `run_newsletter.bat` is gitignored, so your local path
+never gets committed. (Skip this step on macOS/Linux — run the CLI commands
+directly from your shell.)
+
+### 6. Confirm your personal content is gitignored
+
+```bash
+git status
+```
+
+You should see a clean working tree. The following are gitignored and must
+never appear as staged files:
+
+- `.env` — your secrets
+- `reading-list.json` — your sources and keywords
+- `voice.md` — your voice notes
+- `run_newsletter.bat` — your local launcher
+- `data/*.db` — your local SQLite database
+- `drafts/`, `outputs/`, `output/reports/*.md` — generated drafts and reports
+
+Only `.env.example`, `reading-list.example.json`, `voice.example.md`, and
+`run_newsletter.bat.example` are tracked in git.
+
+---
+
 ## Features
 
 - **Web UI Dashboard**: Interactive Streamlit interface for browsing and analyzing content
@@ -83,59 +183,6 @@ python main.py scrape
 python main.py analyze
 python main.py report --type weekly
 ```
-
-## Configure for Your Own Newsletter
-
-The repo ships with infrastructure (scrapers, Claude prompts, the queue-for-review
-flow) but no opinion. Your reading list, your writing voice, and your recipient list
-all live in **gitignored local files** so you can fork without leaking taste.
-
-### 1. Your reading list and keywords
-
-```bash
-cp reading-list.example.json reading-list.json
-```
-
-Edit `reading-list.json` — `primary_keywords`, `secondary_keywords`, `target_companies`,
-`reddit_subreddits`, `rss_feeds`, `industry_verticals`, `trend_categories`, and
-`exclusion_keywords` are all yours to shape. The example file shows the schema with
-a small generic starter list. `reading-list.json` is gitignored.
-
-### 2. Your voice and audience
-
-```bash
-cp voice.example.md voice.md
-```
-
-Edit `voice.md` to describe **who the briefing is for** and **how it should sound**
-(audience, tone, themes to emphasize, things to skip). It gets injected into the
-system prompts used to draft each section. `voice.md` is gitignored.
-
-### 3. Your env vars
-
-```bash
-cp .env.example .env
-```
-
-In `.env`, set:
-
-- `ANTHROPIC_API_KEY` — required, for the Claude calls.
-- `REPORT_EMAIL_TO`, `REPORT_EMAIL_FROM`, `SMTP_*` — recipient and SMTP for
-  newsletter delivery.
-- `NEWSLETTER_TITLE`, `NEWSLETTER_FOOTER_LABEL`, `NEWSLETTER_FOOTER_LINK` —
-  optional branding for the email header and footer.
-- `READING_LIST_PATH`, `VOICE_PROMPT_PATH` — optional, only if you keep these
-  files outside the repo root.
-
-### 4. Confirm your personal content stays local
-
-```bash
-git status
-```
-
-You should see `reading-list.json`, `voice.md`, `.env`, `data/`, `output/`, and
-`drafts/` listed as ignored, never staged. The `*.example.*` files are the only
-versions tracked in git.
 
 ## Web UI Features
 
