@@ -37,6 +37,7 @@ from src.processors import RelevanceScorer, ContentAnalyzer
 from src.reports import ReportGenerator
 from src.emailer import send_newsletter
 from src.utils import setup_logging
+from src.agent.cli import agent_group
 
 console = Console()
 logger = logging.getLogger(__name__)
@@ -586,6 +587,10 @@ def run():
     console.print(result.output)
 
     console.print("[bold green]Pipeline complete![/]")
+
+
+# Register the agent subcommand group: `python main.py agent narratives|leads|status`
+cli.add_command(agent_group)
 
 
 if __name__ == "__main__":

@@ -110,6 +110,7 @@ Only `.env.example`, `reading-list.example.json`, `voice.example.md`, and
 - **AI-powered analysis**: Claude API integration for content summarization and insight extraction
 - **Trend tracking**: Monitor emerging AI trends like agents, RAG, fine-tuning, and more
 - **Automated reports**: Weekly and daily digest generation in Markdown format
+- **Stateful agent layer**: Tracks evolving narratives across reports and validates opportunity signals into corroborated leads (see [Agent layer](#agent-layer) below)
 - **SQLite storage**: Lightweight, portable database
 - **CLI interface**: Command-line tool for automation and scripting
 
@@ -238,6 +239,10 @@ python main.py report --type weekly
 | `python main.py export` | Export data to CSV/JSON |
 | `python main.py run` | Run full pipeline |
 | `python main.py daemon` | Run in scheduled mode |
+| `python main.py agent narratives process` | Match new articles against the narrative ledger |
+| `python main.py agent narratives list` | Show active narratives |
+| `python main.py agent leads validate` | Check open leads for corroboration |
+| `python main.py agent status` | Snapshot of narrative + lead state |
 
 ### Command Options
 
@@ -254,6 +259,64 @@ python main.py export --format csv --output data.csv
 # Run daemon with custom interval
 python main.py daemon --interval 4h
 ```
+
+## Agent layer
+
+The batch pipeline (`scrape -> analyze -> report`) is stateless: each run treats articles in isolation, so repeated trends get rediscovered, opportunity signals fire and vanish, and reports have no memory of last week's themes. The agent layer adds two narrow capabilities on top of the existing pipeline.
+
+### What it adds
+
+- **Narrative ledger.** A persistent set of evolving narratives across reports. New articles are matched against active narratives via Claude (`extends`, `contradicts`, `elaborates`) or start a new thread. Narratives auto-promote (emerging → active) on second evidence and auto-decay (active → plateauing → resolved) when they go quiet. Reports stop saying "agents are taking off" three weeks in a row.
+- **Tracked leads.** The existing `analyze` step already detects opportunity signals (hiring waves, funding rumors, deployment milestones) but they sit unused in the database. The agent registers each as an unconfirmed lead, validates against fresh articles for corroboration, promotes to `corroborated` once a configurable threshold is hit, and auto-kills uncorroborated leads after a quiet period.
+
+### How it's structured
+
+Each capability is a discrete function (not a procedural god-loop) so the same code path serves the interactive CLI and a future autonomous daemon:
+
+- Narratives: `match_against_ledger`, `create_narrative`, `update_narrative`, `decay_quiet_narratives`, `process_recent_articles`
+- Leads: `register_signal_as_lead`, `validate_open_leads`, `auto_dead_stale_leads`, `list_open_leads`
+
+Two new tables (`narratives`, `narrative_evidence`) plus six validation columns added to the existing `opportunity_signals` table. Schema migration is idempotent and runs on every CLI invocation.
+
+### Commands
+
+```bash
+# Match recent articles against the ledger; create or extend narratives
+python main.py agent narratives process --days 7 --limit 20
+
+# Show the ledger
+python main.py agent narratives list
+python main.py agent narratives list --status active
+python main.py agent narratives show 14
+
+# Move quiet narratives forward in their lifecycle
+python main.py agent narratives decay --plateau-days 14 --resolve-days 35
+
+# Tracked-lead validation
+python main.py agent leads list --min-strength 0.5
+python main.py agent leads validate --days 7
+python main.py agent leads kill-stale --days 14
+python main.py agent leads backfill   # one-shot for pre-existing signals
+
+# Unified snapshot
+python main.py agent status
+```
+
+### Typical workflow
+
+```bash
+# Existing pipeline, unchanged
+python main.py scrape && python main.py analyze
+
+# New: feed processed articles to the agent
+python main.py agent narratives process --days 7
+python main.py agent leads validate --days 7
+
+# New: surface state when generating reports
+python main.py agent status
+```
+
+The agent uses the same Claude model as the existing analyzer (set by `CLAUDE_MODEL` in `.env`). All state is local SQLite. No remote infrastructure.
 
 ## Project Structure
 
@@ -273,6 +336,12 @@ ai-deployment-monitor/
 │   │   └── analyzer.py     # Claude API analysis
 │   ├── reports/
 │   │   └── generator.py    # Report generation
+│   ├── agent/
+│   │   ├── schema.py       # Agent table migrations (narratives, validation columns)
+│   │   ├── narratives.py   # Narrative ledger: match, create, update, decay
+│   │   ├── leads.py        # Lead validation: register, corroborate, auto-dead
+│   │   ├── llm.py          # Claude helper for agent prompts
+│   │   └── cli.py          # `python main.py agent ...` subcommands
 │   └── utils/
 │       └── helpers.py
 ├── data/
